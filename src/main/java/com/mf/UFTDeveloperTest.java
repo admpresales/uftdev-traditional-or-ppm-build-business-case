@@ -18,6 +18,7 @@ import java.time.Year;
 
 public class UFTDeveloperTest extends UnitTestClassBase {
 Browser browser;
+Browser browser2;
     public UFTDeveloperTest() {
         //Change this constructor to private if you supply your own public constructor
     }
@@ -38,16 +39,21 @@ Browser browser;
         browser = BrowserFactory.launch(BrowserType.CHROME);
         browser.clearCache();
         browser.deleteCookies();
+
     }
 
     @After
     public void tearDown() throws Exception {
-        //browser.closeAllTabs();
+        browser.closeAllTabs();
+        if (browser2.exists()){
+            browser2.closeAllTabs();
+        }
     }
 
     @Test
     public void test() throws GeneralLeanFtException {
-        int NextYear = (Year.now().getValue() + 1);
+        int NextYear;
+        NextYear = (Year.now().getValue() + 1);
         int counter;
 
         browser.navigate("http://nimbusserver.aos.com:8088");
@@ -212,44 +218,44 @@ Browser browser;
                 .innerText("Create").build());
         CreateWebElement.click();
         browser.sync();
-        Button CreateWebElement2 = browser.describe(Page.class, new PageDescription.Builder()
-                .title("Create a Blank Staffing Profile").build())
-                .describe(Button.class, new ButtonDescription.Builder()
-                        .name("    Create   ").build());
-        /*
-        WebElement CreateWebElement2 = browser.describe(WebElement.class, new WebElementDescription.Builder()
+        BrowserDescription browserDescription = new BrowserDescription();
+        browserDescription.setOpenTitle("Create a Blank Staffing Profile");
+        browserDescription.setType(BrowserType.CHROME);
+        browser2 = BrowserFactory.attach(browserDescription);
+
+        WebElement CreateWebElement2 = browser2.describe(WebElement.class, new WebElementDescription.Builder()
                 .tagName("DIV")
                 .innerText("Create ")
                 .index(0).build());
 
-         */
+
         CreateWebElement2.click();
-        browser.sync();
-        Link SelectTheStaffingProfileLink = browser.describe(Link.class, new LinkDescription.Builder()
+        browser2.sync();
+        Link SelectTheStaffingProfileLink = browser2.describe(Link.class, new LinkDescription.Builder()
                 .tagName("A")
                 .innerText("Select the Staffing Profile").build());
         SelectTheStaffingProfileLink.click();
-        browser.sync();
+        browser2.sync();
         //A/R Billing Upgrade
-        EditField CopySourceEditField = browser.describe(Frame.class, new FrameDescription.Builder()
+        EditField CopySourceEditField = browser2.describe(Frame.class, new FrameDescription.Builder()
                 .name("copyPositionsDialogIF").build())
                 .describe(EditField.class, new EditFieldDescription.Builder()
                         .title("Staffing Profile:").build());
         CopySourceEditField.setValue("A/R Billing Upgrade");
-        WebElement StaffingProfileWebElement = browser.describe(Frame.class, new FrameDescription.Builder()
+        WebElement StaffingProfileWebElement = browser2.describe(Frame.class, new FrameDescription.Builder()
                 .name("copyPositionsDialogIF").build())
                 .describe(WebElement.class, new WebElementDescription.Builder()
                         .innerText("* Staffing Profile:").build());
         StaffingProfileWebElement.click();
-        WebElement ImportWebElement = browser.describe(Frame.class, new FrameDescription.Builder()
+        WebElement ImportWebElement = browser2.describe(Frame.class, new FrameDescription.Builder()
                 .name("copyPositionsDialogIF").build())
                 .describe(WebElement.class, new WebElementDescription.Builder()
                         .tagName("SPAN")
                         .innerText("Import")
                         .index(1).build());
         ImportWebElement.click();
-        browser.sync();
-        WebElement DoneWebElement = browser.describe(WebElement.class, new WebElementDescription.Builder()
+        browser2.sync();
+        WebElement DoneWebElement = browser2.describe(WebElement.class, new WebElementDescription.Builder()
                 .tagName("SPAN")
                 .innerText("Done").build());
         DoneWebElement.click();
