@@ -15,6 +15,7 @@ import com.hp.lft.sdk.web.*;
 import unittesting.*;
 
 import java.time.Year;
+import java.util.concurrent.TimeUnit;
 
 public class UFTDeveloperTest extends UnitTestClassBase {
 Browser browser;
@@ -55,6 +56,7 @@ Browser browser2;
         int NextYear;
         NextYear = (Year.now().getValue() + 1);
         int counter;
+        boolean NewBrowserThere;
 
         browser.navigate("http://nimbusserver.aos.com:8088");
         browser.sync();
@@ -218,10 +220,30 @@ Browser browser2;
                 .innerText("Create").build());
         CreateWebElement.click();
         browser.sync();
+        browser.sync();
         BrowserDescription browserDescription = new BrowserDescription();
         browserDescription.setOpenTitle("Create a Blank Staffing Profile");
         browserDescription.setType(BrowserType.CHROME);
-        browser2 = BrowserFactory.attach(browserDescription);
+        counter = 0;
+        do {
+            counter++;
+            try {
+                browser2 = BrowserFactory.attach(browserDescription);
+                NewBrowserThere = true;
+                break;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                NewBrowserThere = false;
+                if (counter >= 15) {
+                    throw e;
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        } while (!NewBrowserThere);
 
         WebElement CreateWebElement2 = browser2.describe(WebElement.class, new WebElementDescription.Builder()
                 .tagName("DIV")
